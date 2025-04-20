@@ -99,8 +99,22 @@ export async function getConversationSessions(): Promise<ConversationSession[]> 
 
 import { Wechaty, log } from 'wechaty'
 import { PuppetXp } from 'wechaty-puppet-xp';
+import WebSocket from 'ws';
 
 let bot: Wechaty | null = null;
+const wss = new WebSocket.Server({ port: 3001 });
+
+wss.on('connection', ws => {
+  console.log('WebSocket server connected');
+});
+
+function logToWebSocket(message: string) {
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(message);
+    }
+  });
+}
 
 export async function getWechatyBot(): Promise<Wechaty> {
   if (bot) {
@@ -115,18 +129,25 @@ export async function getWechatyBot(): Promise<Wechaty> {
   });
 
   bot.on('scan', (qrcode, status) => {
-    console.log(`Scan QR Code to login: ${status}\n${qrcode}`);
+    const message = `Scan QR Code to login: ${status}\n${qrcode}`;
+    logToWebSocket(message);
+    console.log(message);
   });
 
   bot.on('login', user => {
-    console.log(`User ${user} logged in`);
+    const message = `User ${user} logged in`;
+    logToWebSocket(message);
+    console.log(message);
   });
 
   bot.on('message', message => {
-    console.log(`Message: ${message.text()}`);
+    const logMessage = `Message: ${message.text()}`;
+    logToWebSocket(logMessage);
+    console.log(logMessage);
   });
 
   await bot.start();
+  logToWebSocket('Wechaty bot started.');
   console.log('Wechaty bot started.');
 
   return bot;
@@ -135,9 +156,8 @@ export async function getWechatyBot(): Promise<Wechaty> {
 export async function stopWechatyBot(): Promise<void> {
   if (bot) {
     await bot.stop();
+    logToWebSocket('Wechaty bot stopped.');
     console.log('Wechaty bot stopped.');
     bot = null;
   }
 }
-
-    

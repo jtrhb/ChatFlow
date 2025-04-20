@@ -182,10 +182,32 @@ const MessageInput = () => {
 
 export default function Home() {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const [logMessages, setLogMessages] = useState<string[]>([]);
 
   const handleSelectConversation = (id: string) => {
     setSelectedConversationId(id);
   };
+
+  useEffect(() => {
+    const socket = new WebSocket('ws://localhost:3001');
+
+    socket.onopen = () => {
+      console.log('WebSocket connected');
+    };
+
+    socket.onmessage = (event) => {
+      const message = event.data;
+      setLogMessages((prevMessages) => [...prevMessages, message]);
+    };
+
+    socket.onclose = () => {
+      console.log('WebSocket disconnected');
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, []);
 
   return (
     <div className="flex h-svh w-full">
@@ -197,6 +219,16 @@ export default function Home() {
       <div className="flex flex-col flex-1">
         <MessageDisplayArea conversationId={selectedConversationId} />
         <MessageInput />
+      </div>
+      <div>
+        <h2>Logs:</h2>
+        <Card className="h-48 rounded-none border-none shadow-none">
+          <CardContent className="overflow-y-auto p-4">
+            {logMessages.map((message, index) => (
+              <div key={index}>{message}</div>
+            ))}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
