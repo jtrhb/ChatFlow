@@ -8,6 +8,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 const mockConversations: ConversationSession[] = [
   {
@@ -30,6 +31,55 @@ const mockConversations: ConversationSession[] = [
     avatarUrl: 'https://picsum.photos/id/239/50/50',
     unreadMessageCount: 1,
     recentActivity: Date.now() - 1000 * 60 * 60 * 24, // 1 day ago
+  },
+  {
+    id: '4',
+    nickname: 'Bob Williams',
+    avatarUrl: 'https://picsum.photos/id/240/50/50',
+    unreadMessageCount: 0,
+    recentActivity: Date.now() - 1000 * 60 * 60 * 48, // 2 days ago
+  },
+  {
+    id: '5',
+    nickname: 'Emily Brown',
+    avatarUrl: 'https://picsum.photos/id/241/50/50',
+    unreadMessageCount: 3,
+    recentActivity: Date.now() - 1000 * 60 * 60 * 72, // 3 days ago
+  },
+  {
+    id: '6',
+    nickname: 'David Garcia',
+    avatarUrl: 'https://picsum.photos/id/242/50/50',
+    unreadMessageCount: 1,
+    recentActivity: Date.now() - 1000 * 60 * 60 * 96, // 4 days ago
+  },
+  {
+    id: '7',
+    nickname: 'Olivia Rodriguez',
+    avatarUrl: 'https://picsum.photos/id/243/50/50',
+    unreadMessageCount: 0,
+    recentActivity: Date.now() - 1000 * 60 * 60 * 120, // 5 days ago
+  },
+  {
+    id: '8',
+    nickname: 'Daniel Martinez',
+    avatarUrl: 'https://picsum.photos/id/244/50/50',
+    unreadMessageCount: 2,
+    recentActivity: Date.now() - 1000 * 60 * 60 * 144, // 6 days ago
+  },
+  {
+    id: '9',
+    nickname: 'Sophia Anderson',
+    avatarUrl: 'https://picsum.photos/id/245/50/50',
+    unreadMessageCount: 0,
+    recentActivity: Date.now() - 1000 * 60 * 60 * 168, // 7 days ago
+  },
+  {
+    id: '10',
+    nickname: 'Matthew Thomas',
+    avatarUrl: 'https://picsum.photos/id/246/50/50',
+    unreadMessageCount: 1,
+    recentActivity: Date.now() - 1000 * 60 * 60 * 192, // 8 days ago
   },
 ];
 
@@ -54,8 +104,44 @@ const mockMessages: WechatyMessage[] = [
   },
   {
     sender: 'You',
-    content: 'I am doing great as well.',
+    content: 'I am doing great as well.This is a very long message to test the UI and see how it wraps. I hope it looks good!',
     timestamp: Date.now() - 1000 * 60 * 1,
+    type: 'text',
+  },
+  {
+    sender: 'John Doe',
+    content: 'Awesome! Let\'s catch up soon.  This is a very long message to test the UI and see how it wraps. I hope it looks good!',
+    timestamp: Date.now(),
+    type: 'text',
+  },
+  {
+    sender: 'You',
+    content: 'Sounds like a plan!',
+    timestamp: Date.now() + 1000 * 60 * 1,
+    type: 'text',
+  },
+  {
+    sender: 'John Doe',
+    content: 'Great! Talk to you later.This is a very long message to test the UI and see how it wraps. I hope it looks good!',
+    timestamp: Date.now() + 1000 * 60 * 2,
+    type: 'text',
+  },
+  {
+    sender: 'You',
+    content: 'Bye!',
+    timestamp: Date.now() + 1000 * 60 * 3,
+    type: 'text',
+  },
+  {
+    sender: 'John Doe',
+    content: 'See ya!',
+    timestamp: Date.now() + 1000 * 60 * 4,
+    type: 'text',
+  },
+  {
+    sender: 'You',
+    content: '👋',
+    timestamp: Date.now() + 1000 * 60 * 5,
     type: 'text',
   },
 ];
@@ -74,28 +160,30 @@ const ConversationList = ({ onSelectConversation }: { onSelectConversation: (id:
         <CardTitle>Conversations</CardTitle>
       </CardHeader>
       <CardContent className="overflow-y-auto p-0">
-        <ul className="divide-y divide-border">
-          {conversations.map((conversation) => (
-            <li
-              key={conversation.id}
-              className="flex items-center space-x-4 p-4 hover:bg-accent cursor-pointer"
-              onClick={() => onSelectConversation(conversation.id)}
-            >
-              <Avatar>
-                <AvatarImage src={conversation.avatarUrl} alt={conversation.nickname} />
-                <AvatarFallback>{conversation.nickname.substring(0, 2)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-semibold">{conversation.nickname}</p>
-                {conversation.unreadMessageCount > 0 && (
-                  <span className="text-sm text-muted-foreground">
-                    {conversation.unreadMessageCount} unread messages
-                  </span>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
+        <ScrollArea className="h-[calc(100vh - 100px)]">
+          <ul className="divide-y divide-border">
+            {conversations.map((conversation) => (
+              <li
+                key={conversation.id}
+                className="flex items-center space-x-4 p-4 hover:bg-accent cursor-pointer"
+                onClick={() => onSelectConversation(conversation.id)}
+              >
+                <Avatar>
+                  <AvatarImage src={conversation.avatarUrl} alt={conversation.nickname} />
+                  <AvatarFallback>{conversation.nickname.substring(0, 2)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-semibold">{conversation.nickname}</p>
+                  {conversation.unreadMessageCount > 0 && (
+                    <span className="text-sm text-muted-foreground">
+                      {conversation.unreadMessageCount} unread messages
+                    </span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </ScrollArea>
       </CardContent>
     </Card>
   );
@@ -124,29 +212,31 @@ const MessageDisplayArea = ({ conversationId }: { conversationId: string | null 
       <CardHeader className="pb-2">
         <CardTitle>Chat History</CardTitle>
       </CardHeader>
-      <CardContent className="overflow-y-auto p-4">
-        <div className="space-y-4">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`flex flex-col ${message.sender === 'You' ? 'items-end' : 'items-start'
-                }`}
-            >
+      <CardContent className="p-4">
+        <ScrollArea className="h-[calc(100vh - 200px)]">
+          <div className="space-y-4">
+            {messages.map((message, index) => (
               <div
-                className={`rounded-xl px-4 py-2 ${message.sender === 'You'
-                  ? 'bg-blue-100 text-gray-800'
-                  : 'bg-gray-100 text-gray-800'
+                key={index}
+                className={`flex flex-col ${message.sender === 'You' ? 'items-end' : 'items-start'
                   }`}
               >
-                {message.content}
+                <div
+                  className={`rounded-xl px-4 py-2 break-words ${message.sender === 'You'
+                    ? 'bg-blue-100 text-gray-800'
+                    : 'bg-gray-100 text-gray-800'
+                    }`}
+                >
+                  {message.content}
+                </div>
+                <span className="text-xs text-muted-foreground mt-1">
+                  {message.sender} - {new Date(message.timestamp).toLocaleTimeString()}
+                </span>
               </div>
-              <span className="text-xs text-muted-foreground mt-1">
-                {message.sender} - {new Date(message.timestamp).toLocaleTimeString()}
-              </span>
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
       </CardContent>
     </Card>
   );
@@ -233,4 +323,3 @@ export default function Home() {
     </div>
   );
 }
-
