@@ -301,7 +301,7 @@ export default function Home() {
 
   return (
     <div className="flex h-svh w-full">
-      <Sidebar className="w-80 border-r">
+      <Sidebar className="w-64 border-r">
         <SidebarContent>
           <ConversationList onSelectConversation={handleSelectConversation} />
         </SidebarContent>
@@ -323,3 +323,4 @@ export default function Home() {
     </div>
   );
 }
+
