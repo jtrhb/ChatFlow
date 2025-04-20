@@ -97,3 +97,47 @@ export async function getConversationSessions(): Promise<ConversationSession[]> 
   ];
 }
 
+import { Wechaty, log } from 'wechaty'
+import { PuppetXp } from 'wechaty-puppet-xp';
+
+let bot: Wechaty | null = null;
+
+export async function getWechatyBot(): Promise<Wechaty> {
+  if (bot) {
+    return bot;
+  }
+
+  const puppet = new PuppetXp();
+
+  bot = new Wechaty({
+    puppet,
+    name: 'WechatyBot', // Optional bot name
+  });
+
+  bot.on('scan', (qrcode, status) => {
+    console.log(`Scan QR Code to login: ${status}\n${qrcode}`);
+  });
+
+  bot.on('login', user => {
+    console.log(`User ${user} logged in`);
+  });
+
+  bot.on('message', message => {
+    console.log(`Message: ${message.text()}`);
+  });
+
+  await bot.start();
+  console.log('Wechaty bot started.');
+
+  return bot;
+}
+
+export async function stopWechatyBot(): Promise<void> {
+  if (bot) {
+    await bot.stop();
+    console.log('Wechaty bot stopped.');
+    bot = null;
+  }
+}
+
+    
