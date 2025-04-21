@@ -1,6 +1,5 @@
-tsx
 import React, { useState, useEffect } from 'react';
-import QRCode from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface LoginPageProps {
   onLoginSuccess: () => void;
@@ -58,7 +57,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
       {qrCodeData ? (
         <div>
           <h2>Login with QR Code</h2>
-          <QRCode value={qrCodeData} size={256} level="H" />
+          <QRCodeSVG value={qrCodeData} size={256} level="H" />
           <p>Scan with your mobile device to log in.</p>
         </div>
       ) : (

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { getConversationSessions, getChatHistory, WechatyMessage, ConversationSession, isLogin } from '@/services/wechaty'
+import { getConversationSessions, getChatHistory, WechatyMessage, ConversationSession } from '@/services/wechaty'
 
 import { Sidebar, SidebarContent } from '@/components/ui/sidebar'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
@@ -277,11 +277,12 @@ const MessageInput = () => {
 export default function Home() {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [logMessages, setLogMessages] = useState<string[]>([]);
+  const [isLogin, setIsLogin] = useState(false);
   const [qrCodeData, setQrCodeData] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLogin()) {
+    if (!isLogin) {
       router.push('/login');
     }
   }, [router]);
