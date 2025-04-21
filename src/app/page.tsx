@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { getConversationSessions, getChatHistory, WechatyMessage, ConversationSession } from '@/services/wechaty';
-import { Sidebar, SidebarContent } from '@/components/ui/sidebar';
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect, useRef } from 'react'
+import { getConversationSessions, getChatHistory, WechatyMessage, ConversationSession } from '@/services/wechaty'
+import { Sidebar, SidebarContent } from '@/components/ui/sidebar'
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { Send } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Socket, io } from 'socket.io-client'
+import { QRCodeSVG } from 'qrcode.react'
 
 const mockConversations: ConversationSession[] = [
   {
@@ -157,7 +159,7 @@ const ConversationList = ({ onSelectConversation }: { onSelectConversation: (id:
   return (
     <Card className="h-full rounded-none border-none shadow-none">
       <CardHeader className="pb-2">
-        <CardTitle>Conversations</CardTitle>
+        <CardTitle>对话列表</CardTitle>
       </CardHeader>
       <CardContent className="overflow-y-auto p-0">
         <ScrollArea className="h-[calc(100vh - 100px)]">
@@ -210,7 +212,7 @@ const MessageDisplayArea = ({ conversationId }: { conversationId: string | null 
   return (
     <Card className="h-full rounded-none border-none shadow-none">
       <CardHeader className="pb-2">
-        <CardTitle>Chat History</CardTitle>
+        <CardTitle>历史消息</CardTitle>
       </CardHeader>
       <CardContent className="p-4">
         <ScrollArea className="h-[calc(100vh - 200px)]">
@@ -273,35 +275,40 @@ const MessageInput = () => {
 export default function Home() {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [logMessages, setLogMessages] = useState<string[]>([]);
+  const [qrCodeData, setQrCodeData] = useState<string | null>(null);
 
   const handleSelectConversation = (id: string) => {
     setSelectedConversationId(id);
   };
 
   useEffect(() => {
-    const socket = new WebSocket('ws://localhost:3001');
+    const socket: Socket = io('http://localhost:9000')
 
-    socket.onopen = () => {
+    socket.on('connect', () => {
       console.log('WebSocket connected');
-    };
+    })
 
-    socket.onmessage = (event) => {
-      const message = event.data;
-      setLogMessages((prevMessages) => [...prevMessages, message]);
-    };
-
-    socket.onclose = () => {
-      console.log('WebSocket disconnected');
-    };
+    socket.on('disconnect', (reason: any) => {
+      console.warn('Socket disconnected:', reason);
+    });
 
     return () => {
-      socket.close();
+      if (socket) {
+        socket.disconnect();
+      }
     };
   }, []);
 
   return (
     <div className="flex h-svh w-full">
       <Sidebar className="w-64 border-r">
+        {
+            qrCodeData?(
+                <div style={{ display:'flex', justifyContent:'center', alignItems:'center', padding:'10px' }}>
+                  <QRCodeSVG value={qrCodeData} size={200}/>
+                </div>
+              ):(<></>)
+        }
         <SidebarContent>
           <ConversationList onSelectConversation={handleSelectConversation} />
         </SidebarContent>
