@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react'
-import { getConversationSessions, getChatHistory, WechatyMessage, ConversationSession } from '@/services/wechaty'
+import { useRouter } from 'next/navigation'
+import { getConversationSessions, getChatHistory, WechatyMessage, ConversationSession, isLogin } from '@/services/wechaty'
+
 import { Sidebar, SidebarContent } from '@/components/ui/sidebar'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -276,6 +278,13 @@ export default function Home() {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [logMessages, setLogMessages] = useState<string[]>([]);
   const [qrCodeData, setQrCodeData] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLogin()) {
+      router.push('/login');
+    }
+  }, [router]);
 
   const handleSelectConversation = (id: string) => {
     setSelectedConversationId(id);
